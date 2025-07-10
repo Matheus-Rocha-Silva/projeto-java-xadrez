@@ -1,12 +1,12 @@
 package app;
 
-import tabuleiro.Posicao;
-import tabuleiro.Tabuleiro;
+import xadrez.PartidaXadrez;
 
 public class Main {
 	public static void main(String[] args) {
 		
-		Tabuleiro board = new Tabuleiro(8, 8);
+		PartidaXadrez chessMatch = new PartidaXadrez();
+		UI.printBoard(chessMatch.getPecas());
 		
 	}
 }
