@@ -2,6 +2,7 @@ package xadrez;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import tabuleiro.Peca;
 import tabuleiro.Posicao;
@@ -15,6 +16,7 @@ public class PartidaXadrez {
 	private int turn;
 	private Cor currentPlayer;
 	private Tabuleiro board;
+	private boolean check;
 
 	private List<Peca> piecesOnTheBoard = new ArrayList<>();
 	private List<Peca> capturedPieces = new ArrayList<>();
@@ -24,6 +26,7 @@ public class PartidaXadrez {
 		board = new Tabuleiro(8, 8);
 		turn = 1;
 		currentPlayer = Cor.BRANCO;
+		check = false;
 		initialSetup();
 	}
 
@@ -33,6 +36,10 @@ public class PartidaXadrez {
 	
 	public Cor getCurrentPlayer() {
 		return currentPlayer;
+	}
+	
+	public boolean getCheck() {
+		return check;
 	}
 	
 	public PecaXadrez[][] getPecas() {
@@ -58,6 +65,14 @@ public class PartidaXadrez {
 		validateSourcePosition(source);
 		validateTargetPosition(source, target);
 		Peca capturedPiece = makeMove(source, target);
+		
+		if(testCheck(currentPlayer)) {
+			undoMove(source, target, capturedPiece);
+			throw new ChessException("Você não pode se colocar em cheque");
+		}
+		
+		check = (testCheck(opponent(currentPlayer))) ? true : false;
+		
 		nextTurn();
 		return (PecaXadrez) capturedPiece;
 	}
@@ -75,6 +90,16 @@ public class PartidaXadrez {
 		return capturedPiece;
 	}
 	
+	private void undoMove(Posicao source, Posicao target, Peca capturedPiece) {
+		Peca p = board.removePiece(target);
+		board.placePiece(p, source);
+		
+		if(capturedPiece != null) {
+			board.placePiece(capturedPiece, target);
+			capturedPieces.remove(capturedPiece);
+			piecesOnTheBoard.add(capturedPiece);
+		}
+	}
 	
 	private void validateSourcePosition(Posicao posicao) {
 		if(!board.thereIsAPiece(posicao)) {
@@ -99,6 +124,32 @@ public class PartidaXadrez {
 		currentPlayer = (currentPlayer == Cor.BRANCO) ? Cor.PRETO : Cor.BRANCO;
 	}
 	
+	private Cor opponent(Cor cor) {
+		return (cor == Cor.BRANCO) ? Cor.PRETO : Cor.BRANCO;
+	}
+	
+	private PecaXadrez king(Cor cor) {
+		List<Peca> list = piecesOnTheBoard.stream().filter(x -> ((PecaXadrez)x).getCor() == cor).collect(Collectors.toList());
+		for(Peca p : list) {
+			if(p instanceof King) {
+				return (PecaXadrez)p;
+			}
+		}
+		throw new IllegalStateException("Não há nenhum rei " + cor + " no tabuleiro");
+	}
+	
+	private boolean testCheck(Cor cor) {
+		Posicao kingPosition = king(cor).getChessPosition().toPosition();
+		List<Peca> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((PecaXadrez)x).getCor() == opponent(cor)).collect(Collectors.toList());
+		
+		for(Peca p : opponentPieces) {
+			boolean[][] mat = p.possibleMoves();
+			if(mat[kingPosition.getLinha()][kingPosition.getColuna()]) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	private void placeNewPiece(char coluna, int linha, PecaXadrez peca) {
 		board.placePiece(peca, new ChessPosition(coluna, linha).toPosition());
