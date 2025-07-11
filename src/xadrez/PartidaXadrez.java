@@ -124,7 +124,8 @@ public class PartidaXadrez {
 			throw new IllegalStateException("Não há peça para ser promovida");
 		}
 		if(!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("R")) {
-			throw new InvalidParameterException("Tipo invalido para promoção");
+			//throw new InvalidParameterException("Tipo invalido para promoção");
+			return promoted;
 		}
 		
 		Posicao pos = promoted.getChessPosition().toPosition();
