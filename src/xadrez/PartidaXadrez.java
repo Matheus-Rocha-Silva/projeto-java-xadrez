@@ -1,5 +1,8 @@
 package xadrez;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tabuleiro.Peca;
 import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
@@ -13,6 +16,9 @@ public class PartidaXadrez {
 	private Cor currentPlayer;
 	private Tabuleiro board;
 
+	private List<Peca> piecesOnTheBoard = new ArrayList<>();
+	private List<Peca> capturedPieces = new ArrayList<>();
+	
 	
 	public PartidaXadrez() {
 		board = new Tabuleiro(8, 8);
@@ -60,6 +66,12 @@ public class PartidaXadrez {
 		Peca p = board.removePiece(source);
 		Peca capturedPiece = board.removePiece(target);
 		board.placePiece(p, target);
+		
+		if(capturedPiece != null) {
+			piecesOnTheBoard.remove(capturedPiece);
+			capturedPieces.add(capturedPiece);
+		}
+		
 		return capturedPiece;
 	}
 	
@@ -90,6 +102,7 @@ public class PartidaXadrez {
 	
 	private void placeNewPiece(char coluna, int linha, PecaXadrez peca) {
 		board.placePiece(peca, new ChessPosition(coluna, linha).toPosition());
+		piecesOnTheBoard.add(peca);
 	}
 
 	private void initialSetup() {
@@ -99,6 +112,7 @@ public class PartidaXadrez {
 		placeNewPiece('e', 2, new Rook(board, Cor.BRANCO));
 		placeNewPiece('e', 1, new Rook(board, Cor.BRANCO));
 		placeNewPiece('d', 1, new King(board, Cor.BRANCO));
+		
 		placeNewPiece('c', 7, new Rook(board, Cor.PRETO));
 		placeNewPiece('c', 8, new Rook(board, Cor.PRETO));
 		placeNewPiece('d', 7, new Rook(board, Cor.PRETO));
