@@ -16,7 +16,7 @@ public class Main {
 		PartidaXadrez chessMatch = new PartidaXadrez();
 		List<PecaXadrez> captured = new ArrayList<>();
 		
-		while(true) {
+		while(!chessMatch.getCheckMate()) {
 			try {
 			UI.clearScreen();
 			UI.printMatch(chessMatch, captured);
@@ -46,6 +46,7 @@ public class Main {
 				sc.nextLine();
 			}
 		}
-		
+		UI.clearScreen();
+		UI.printMatch(chessMatch, captured);
 	}
 }
