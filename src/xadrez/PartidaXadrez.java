@@ -9,6 +9,7 @@ import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
 import xadrez.pecas.Bishop;
 import xadrez.pecas.King;
+import xadrez.pecas.Queen;
 import xadrez.pecas.Rook;
 
 public class PartidaXadrez {
@@ -199,9 +200,11 @@ public class PartidaXadrez {
 		placeNewPiece('c', 1, new Bishop(board, Cor.BRANCO));
 		placeNewPiece('d', 1, new Rook(board, Cor.BRANCO));
 		placeNewPiece('e', 1, new King(board, Cor.BRANCO));
-	 
+		placeNewPiece('e', 1, new Queen(board, Cor.BRANCO));
 		
+	 
 		placeNewPiece('b', 8, new Rook(board, Cor.PRETO));
+		placeNewPiece('e', 1, new Queen(board, Cor.PRETO));
 		placeNewPiece('c', 8, new Bishop(board, Cor.PRETO));
 		placeNewPiece('a', 8, new King(board, Cor.PRETO));
 	}
