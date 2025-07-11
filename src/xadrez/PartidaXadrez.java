@@ -88,7 +88,8 @@ public class PartidaXadrez {
 	}
 	
 	private Peca makeMove(Posicao source, Posicao target) {
-		Peca p = board.removePiece(source);
+		PecaXadrez p = (PecaXadrez) board.removePiece(source);
+		p.increaseMoveCount();
 		Peca capturedPiece = board.removePiece(target);
 		board.placePiece(p, target);
 		
@@ -101,7 +102,8 @@ public class PartidaXadrez {
 	}
 	
 	private void undoMove(Posicao source, Posicao target, Peca capturedPiece) {
-		Peca p = board.removePiece(target);
+		PecaXadrez p = (PecaXadrez) board.removePiece(target);
+		p.decreaseMoveCount();
 		board.placePiece(p, source);
 		
 		if(capturedPiece != null) {
