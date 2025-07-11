@@ -40,7 +40,10 @@ public class Main {
 			
 			if(chessMatch.getPromoted() != null) {
 				System.out.print("Insira uma peça para promoção (B/N/R/Q): ");
-				String type = sc.nextLine();
+				String type = sc.nextLine().toUpperCase();
+				while(!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("R")) {
+					type = sc.nextLine().toUpperCase();
+				}
 				chessMatch.replacePromotedPiece(type);
 			}
 			
