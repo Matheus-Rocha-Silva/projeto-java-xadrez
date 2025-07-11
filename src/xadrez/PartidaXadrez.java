@@ -45,6 +45,9 @@ public class PartidaXadrez {
 		if(!board.thereIsAPiece(posicao)) {
 			throw new ChessException("Não há posição no tabuleiro");
 		}
+		if(!board.peca(posicao).isThereAnyPossibleMove()) {
+			throw new ChessException("Não há movimentos possiveis para a peça escolhida.");
+		}
 	}
 	
 	
