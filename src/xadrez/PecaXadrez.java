@@ -7,7 +7,8 @@ import tabuleiro.Tabuleiro;
 public abstract class PecaXadrez extends Peca{
 	
 	private Cor cor;
-
+	private int moveCount;
+	
 	public PecaXadrez(Tabuleiro board, Cor cor) {
 		super(board);
 		this.cor = cor;
@@ -16,7 +17,18 @@ public abstract class PecaXadrez extends Peca{
 	public Cor getCor() {
 		return cor;
 	}
-
+	public int getMoveCount() {
+		return moveCount;
+	}
+	
+	public void increaseMoveCount() {
+		moveCount++;
+	}
+	
+	public void decreaseMoveCount() {
+		moveCount--;
+	}
+	
 	public ChessPosition getChessPosition() {
 		return ChessPosition.fromPosition(posicao);
 	}
