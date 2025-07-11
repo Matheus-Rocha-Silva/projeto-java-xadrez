@@ -25,6 +25,9 @@ public class Main {
 			System.out.print("Target: ");
 			ChessPosition target = UI.readChessPosition(sc);
 			
+			boolean[][] possibleMoves = chessMatch.possibleMoves(source);
+			UI.clearScreen();
+			UI.printBoard(chessMatch.getPecas(), possibleMoves);
 			PecaXadrez capturedPiece = chessMatch.performChessMove(source, target);
 			
 			}catch(ChessException e) {

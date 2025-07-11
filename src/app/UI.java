@@ -53,12 +53,25 @@ public class UI {
 		for (int i = 0; i < pecas.length; i++) {
 			System.out.println((8 - i) + " ");
 			for (int j = 0; j < pecas.length; j++) {
-				printPiece(pecas[i][j]);
+				printPiece(pecas[i][j], false);
 			}
 			System.out.println();
 		}
 		System.out.println("  a b c d e f g h");
 	}
+	
+	
+	public static void printBoard(PecaXadrez[][] pecas, boolean[][] possibleMoves) {
+		for (int i = 0; i < pecas.length; i++) {
+			System.out.println((8 - i) + " ");
+			for (int j = 0; j < pecas.length; j++) {
+				printPiece(pecas[i][j], possibleMoves[i][j]);
+			}
+			System.out.println();
+		}
+		System.out.println("  a b c d e f g h");
+	}
+	
 
 	/*private static void printPiece(PecaXadrez peca) {
 		if (peca == null) {
@@ -68,15 +81,12 @@ public class UI {
 		}
 		System.out.println(" ");*/
 
-	private static void printPiece(PecaXadrez piece) {
-		if (piece == null) {
-			System.out.print("-");
-		} else {
-			System.out.print(piece);
+	private static void printPiece(PecaXadrez piece, boolean background) {
+		if(background) {
+			System.out.println(ANSI_BLUE_BACKGROUND + piece + ANSI_RESET);
 		}
-		System.out.print(" ");
 		if (piece == null) {
-			System.out.print("-");
+			System.out.print("-" + ANSI_RESET);
 		} else {
 			if (piece.getCor() == Cor.BRANCO) {
 				System.out.print(ANSI_WHITE + piece + ANSI_RESET);
