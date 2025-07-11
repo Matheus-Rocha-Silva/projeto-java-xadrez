@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import tabuleiro.Peca;
 import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
+import xadrez.pecas.Bishop;
 import xadrez.pecas.King;
 import xadrez.pecas.Rook;
 
@@ -195,11 +196,13 @@ public class PartidaXadrez {
 
 	private void initialSetup() {
 		placeNewPiece('h', 7, new Rook(board, Cor.BRANCO));
+		placeNewPiece('c', 1, new Bishop(board, Cor.BRANCO));
 		placeNewPiece('d', 1, new Rook(board, Cor.BRANCO));
 		placeNewPiece('e', 1, new King(board, Cor.BRANCO));
 	 
 		
 		placeNewPiece('b', 8, new Rook(board, Cor.PRETO));
+		placeNewPiece('c', 8, new Bishop(board, Cor.PRETO));
 		placeNewPiece('a', 8, new King(board, Cor.PRETO));
 	}
 }
