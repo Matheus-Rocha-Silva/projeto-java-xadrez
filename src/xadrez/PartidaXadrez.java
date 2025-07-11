@@ -7,14 +7,28 @@ import xadrez.pecas.King;
 import xadrez.pecas.Rook;
 
 public class PartidaXadrez {
-
+	
+	
+	private int turn;
+	private Cor currentPlayer;
 	private Tabuleiro board;
 
+	
 	public PartidaXadrez() {
 		board = new Tabuleiro(8, 8);
+		turn = 1;
+		currentPlayer = Cor.BRANCO;
 		initialSetup();
 	}
 
+	public int getTurn() {
+		return turn;
+	}
+	
+	public Cor getCurrentPlayer() {
+		return currentPlayer;
+	}
+	
 	public PecaXadrez[][] getPecas() {
 		PecaXadrez[][] mat = new PecaXadrez[board.getLinhas()][board.getColunas()];
 		for (int i = 0; i < board.getLinhas(); i++) {
@@ -38,6 +52,7 @@ public class PartidaXadrez {
 		validateSourcePosition(source);
 		validateTargetPosition(source, target);
 		Peca capturedPiece = makeMove(source, target);
+		nextTurn();
 		return (PecaXadrez) capturedPiece;
 	}
 	
@@ -53,6 +68,9 @@ public class PartidaXadrez {
 		if(!board.thereIsAPiece(posicao)) {
 			throw new ChessException("Não há posição no tabuleiro");
 		}
+		if(currentPlayer != ((PecaXadrez)board.peca(posicao)).getCor()) {
+			throw new ChessException("A peça escolhida não é sua.");
+		}
 		if(!board.peca(posicao).isThereAnyPossibleMove()) {
 			throw new ChessException("Não há movimentos possiveis para a peça escolhida.");
 		}
@@ -62,6 +80,11 @@ public class PartidaXadrez {
 		if(!board.peca(source).possibleMove(target)) {
 			throw new ChessException("A peça escolhida não pode se mover para a posição ed destino.");
 		}
+	}
+	
+	private void nextTurn() {
+		turn++;
+		currentPlayer = (currentPlayer == Cor.BRANCO) ? Cor.PRETO : Cor.BRANCO;
 	}
 	
 	
