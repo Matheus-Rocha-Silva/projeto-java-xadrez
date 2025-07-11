@@ -38,34 +38,38 @@ public class UI {
 		System.out.println("\033[H\033[2J");
 		System.out.flush();
 	}
-	
-	
+
 	public static ChessPosition readChessPosition(Scanner sc) {
 		try {
 			String s = sc.nextLine();
 			char coluna = s.charAt(0);
 			int linha = Integer.parseInt(s.substring(1));
 			return new ChessPosition(coluna, linha);
-		}catch(RuntimeException e) {
+		} catch (RuntimeException e) {
 			throw new InputMismatchException("Erro ao ler ChessPosition. Valores validos são de a1 ao h8");
 		}
 	}
-	
+
 	public static void printMatch(PartidaXadrez chessMatch, List<PecaXadrez> captured) {
 		printBoard(chessMatch.getPecas());
 		System.out.println();
 		printCapturedPieces(captured);
-		System.out.println();		
-		System.out.println("Turn : "+ chessMatch.getTurn());
-		System.out.println("Waiting player: " + chessMatch.getCurrentPlayer());
-		if(chessMatch.getCheck()) {
-			System.out.println("CHECK!!");
+		System.out.println();
+		System.out.println("Turn : " + chessMatch.getTurn());
+		if (!chessMatch.getCheckMate()) {
+			System.out.println("Waiting player: " + chessMatch.getCurrentPlayer());
+			if (chessMatch.getCheck()) {
+				System.out.println("CHECK!!");
+			}
+		}else {
+			System.out.println("CHECKMATE!!");
+			System.out.println("Vencedor: " + chessMatch.getCurrentPlayer());
 		}
 	}
-	
+
 	public static void printBoard(PecaXadrez[][] pecas) {
 		for (int i = 0; i < pecas.length; i++) {
-			System.out.println((8 - i) + " ");
+			System.out.print((8 - i) + " ");
 			for (int j = 0; j < pecas.length; j++) {
 				printPiece(pecas[i][j], false);
 			}
@@ -73,11 +77,10 @@ public class UI {
 		}
 		System.out.println("  a b c d e f g h");
 	}
-	
-	
+
 	public static void printBoard(PecaXadrez[][] pecas, boolean[][] possibleMoves) {
 		for (int i = 0; i < pecas.length; i++) {
-			System.out.println((8 - i) + " ");
+			System.out.print((8 - i) + " ");
 			for (int j = 0; j < pecas.length; j++) {
 				printPiece(pecas[i][j], possibleMoves[i][j]);
 			}
@@ -85,18 +88,15 @@ public class UI {
 		}
 		System.out.println("  a b c d e f g h");
 	}
-	
 
-	/*private static void printPiece(PecaXadrez peca) {
-		if (peca == null) {
-			System.out.println("-");
-		} else {
-			System.out.println(peca);
-		}
-		System.out.println(" ");*/
+	/*
+	 * private static void printPiece(PecaXadrez peca) { if (peca == null) {
+	 * System.out.println("-"); } else { System.out.println(peca); }
+	 * System.out.println(" ");
+	 */
 
 	private static void printPiece(PecaXadrez piece, boolean background) {
-		if(background) {
+		if (background) {
 			System.out.println(ANSI_BLUE_BACKGROUND + piece + ANSI_RESET);
 		}
 		if (piece == null) {
@@ -110,7 +110,7 @@ public class UI {
 		}
 		System.out.println(" ");
 	}
-	
+
 	private static void printCapturedPieces(List<PecaXadrez> captured) {
 		List<PecaXadrez> white = captured.stream().filter(x -> x.getCor() == Cor.BRANCO).collect(Collectors.toList());
 		List<PecaXadrez> black = captured.stream().filter(x -> x.getCor() == Cor.PRETO).collect(Collectors.toList());
@@ -124,5 +124,5 @@ public class UI {
 		System.out.println(Arrays.toString(black.toArray()));
 		System.out.println(ANSI_RESET);
 	}
-	
+
 }

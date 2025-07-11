@@ -17,6 +17,7 @@ public class PartidaXadrez {
 	private Cor currentPlayer;
 	private Tabuleiro board;
 	private boolean check;
+	private boolean checkMate;
 
 	private List<Peca> piecesOnTheBoard = new ArrayList<>();
 	private List<Peca> capturedPieces = new ArrayList<>();
@@ -40,6 +41,10 @@ public class PartidaXadrez {
 	
 	public boolean getCheck() {
 		return check;
+	}
+	
+	public boolean getCheckMate() {
+		return checkMate;
 	}
 	
 	public PecaXadrez[][] getPecas() {
@@ -73,7 +78,12 @@ public class PartidaXadrez {
 		
 		check = (testCheck(opponent(currentPlayer))) ? true : false;
 		
-		nextTurn();
+		if(testCheckMate(opponent(currentPlayer))) {
+			checkMate = true;
+		}else {
+			nextTurn();
+		}
+		
 		return (PecaXadrez) capturedPiece;
 	}
 	
@@ -151,24 +161,43 @@ public class PartidaXadrez {
 		return false;
 	}
 	
+	private boolean testCheckMate(Cor cor) {
+		if(!testCheck(cor)) {
+			return false;
+		}
+		List<Peca> list = piecesOnTheBoard.stream().filter(x -> ((PecaXadrez)x).getCor() == cor).collect(Collectors.toList());
+		for(Peca p : list) {
+			boolean[][] mat = p.possibleMoves();
+			for(int i = 0; i < board.getLinhas(); i++) {
+				for(int j = 0; j < board.getColunas(); j++) {
+					if(mat[i][j]) {
+						Posicao source = ((PecaXadrez)p).getChessPosition().toPosition();
+						Posicao target = new Posicao(i, j);
+						Peca capturedPiece = makeMove(source, target);
+						boolean testCheck = testCheck(cor);
+						undoMove(source, target, capturedPiece);
+						if(!testCheck) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	private void placeNewPiece(char coluna, int linha, PecaXadrez peca) {
 		board.placePiece(peca, new ChessPosition(coluna, linha).toPosition());
 		piecesOnTheBoard.add(peca);
 	}
 
 	private void initialSetup() {
-		placeNewPiece('c', 1, new Rook(board, Cor.BRANCO));
-		placeNewPiece('c', 2, new Rook(board, Cor.BRANCO));
-		placeNewPiece('d', 2, new Rook(board, Cor.BRANCO));
-		placeNewPiece('e', 2, new Rook(board, Cor.BRANCO));
-		placeNewPiece('e', 1, new Rook(board, Cor.BRANCO));
-		placeNewPiece('d', 1, new King(board, Cor.BRANCO));
+		placeNewPiece('h', 7, new Rook(board, Cor.BRANCO));
+		placeNewPiece('d', 1, new Rook(board, Cor.BRANCO));
+		placeNewPiece('e', 1, new King(board, Cor.BRANCO));
+	 
 		
-		placeNewPiece('c', 7, new Rook(board, Cor.PRETO));
-		placeNewPiece('c', 8, new Rook(board, Cor.PRETO));
-		placeNewPiece('d', 7, new Rook(board, Cor.PRETO));
-		placeNewPiece('e', 7, new Rook(board, Cor.PRETO));
-		placeNewPiece('e', 8, new Rook(board, Cor.PRETO));
-		placeNewPiece('d', 8, new King(board, Cor.PRETO));
+		placeNewPiece('b', 8, new Rook(board, Cor.PRETO));
+		placeNewPiece('a', 8, new King(board, Cor.PRETO));
 	}
 }
