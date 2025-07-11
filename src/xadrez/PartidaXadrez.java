@@ -1,5 +1,7 @@
 package xadrez;
 
+import tabuleiro.Peca;
+import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
 import xadrez.pecas.King;
 import xadrez.pecas.Rook;
@@ -23,6 +25,29 @@ public class PartidaXadrez {
 		return mat;
 	}
 
+	public PecaXadrez performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
+		Posicao source = sourcePosition.toPosition();
+		Posicao target = targetPosition.toPosition();
+		validateSourcePosition(source);
+		Peca capturedPiece = makeMove(source, target);
+		return (PecaXadrez) capturedPiece;
+	}
+	
+	private Peca makeMove(Posicao source, Posicao target) {
+		Peca p = board.removePiece(source);
+		Peca capturedPiece = board.removePiece(target);
+		board.placePiece(p, target);
+		return capturedPiece;
+	}
+	
+	
+	private void validateSourcePosition(Posicao posicao) {
+		if(!board.thereIsAPiece(posicao)) {
+			throw new ChessException("Não há posição no tabuleiro");
+		}
+	}
+	
+	
 	private void placeNewPiece(char coluna, int linha, PecaXadrez peca) {
 		board.placePiece(peca, new ChessPosition(coluna, linha).toPosition());
 	}
