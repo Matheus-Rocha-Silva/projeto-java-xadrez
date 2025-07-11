@@ -24,6 +24,13 @@ public class PartidaXadrez {
 		}
 		return mat;
 	}
+	
+	public boolean[][] possibleMoves(ChessPosition sourcePosition){
+		Posicao posicao = sourcePosition.toPosition();
+		validateSourcePosition(posicao);
+		return board.peca(posicao).possibleMoves();
+	}
+	
 
 	public PecaXadrez performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
 		Posicao source = sourcePosition.toPosition();
