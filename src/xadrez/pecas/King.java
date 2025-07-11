@@ -3,12 +3,16 @@ package xadrez.pecas;
 import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
 import xadrez.Cor;
+import xadrez.PartidaXadrez;
 import xadrez.PecaXadrez;
 
 public class King extends PecaXadrez {
 
-	public King(Tabuleiro board, Cor cor) {
+	private PartidaXadrez chessMatch;
+
+	public King(Tabuleiro board, Cor cor, PartidaXadrez chessMatch) {
 		super(board, cor);
+		this.chessMatch = chessMatch;
 	}
 
 	@Override
@@ -19,6 +23,11 @@ public class King extends PecaXadrez {
 	private boolean canMove(Posicao posicao) {
 		PecaXadrez p = (PecaXadrez) getBoard().peca(posicao);
 		return p == null || p.getCor() != getCor();
+	}
+
+	private boolean testRookCastling(Posicao posicao) {
+		PecaXadrez p = (PecaXadrez) getBoard().peca(posicao);
+		return p != null && p instanceof Rook && p.getCor() == getCor() && p.getMoveCount() == 0;
 	}
 
 	@Override
@@ -75,6 +84,31 @@ public class King extends PecaXadrez {
 			mat[p.getLinha()][p.getColuna()] = true;
 		}
 
+		// Movimento Especial Castling
+		if (getMoveCount() == 0 && !chessMatch.getCheck()) {
+			// Movimento especial kingside rook
+			Posicao posT1 = new Posicao(posicao.getLinha(), posicao.getColuna());
+			if (testRookCastling(posT1)) {
+				Posicao p1 = new Posicao(posicao.getLinha(), posicao.getColuna() + 1);
+				Posicao p2 = new Posicao(posicao.getLinha(), posicao.getColuna() + 2);
+				if (getBoard().peca(p1) == null && getBoard().peca(p2) == null) {
+					mat[posicao.getLinha()][posicao.getColuna() + 2] = true;
+				}
+
+			}
+
+			// Movimento especial queenside rook
+			Posicao posT2 = new Posicao(posicao.getLinha(), posicao.getColuna() - 4);
+
+			if (testRookCastling(posT2)) {
+				Posicao p1 = new Posicao(posicao.getLinha(), posicao.getColuna() - 1);
+				Posicao p2 = new Posicao(posicao.getLinha(), posicao.getColuna() - 2);
+				Posicao p3 = new Posicao(posicao.getLinha(), posicao.getColuna() - 3);
+				if (getBoard().peca(p1) == null && getBoard().peca(p2) == null && getBoard().peca(p3) == null) {
+					mat[posicao.getLinha()][posicao.getColuna() - 2] = true;
+				}
+			}
+		}
 		return mat;
 	}
 
