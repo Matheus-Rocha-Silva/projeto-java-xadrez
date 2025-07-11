@@ -9,6 +9,8 @@ import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
 import xadrez.pecas.Bishop;
 import xadrez.pecas.King;
+import xadrez.pecas.Knight;
+import xadrez.pecas.Pawn;
 import xadrez.pecas.Queen;
 import xadrez.pecas.Rook;
 
@@ -19,6 +21,7 @@ public class PartidaXadrez {
 	private Tabuleiro board;
 	private boolean check;
 	private boolean checkMate;
+	private PecaXadrez enPassantVulnerable;
 
 	private List<Peca> piecesOnTheBoard = new ArrayList<>();
 	private List<Peca> capturedPieces = new ArrayList<>();
@@ -45,6 +48,10 @@ public class PartidaXadrez {
 
 	public boolean getCheckMate() {
 		return checkMate;
+	}
+
+	public PecaXadrez getEnPassantVulnerable() {
+		return enPassantVulnerable;
 	}
 
 	public PecaXadrez[][] getPecas() {
@@ -75,12 +82,22 @@ public class PartidaXadrez {
 			throw new ChessException("Você não pode se colocar em cheque");
 		}
 
+		PecaXadrez movedPiece = (PecaXadrez) board.peca(target);
+
 		check = (testCheck(opponent(currentPlayer))) ? true : false;
 
 		if (testCheckMate(opponent(currentPlayer))) {
 			checkMate = true;
 		} else {
 			nextTurn();
+		}
+
+		// Movimento especial en Passant
+		if (movedPiece instanceof Pawn
+				&& (target.getLinha() == source.getLinha() - 2 || target.getLinha() == source.getLinha() + 2)) {
+			enPassantVulnerable = movedPiece;
+		} else {
+			enPassantVulnerable = null;
 		}
 
 		return (PecaXadrez) capturedPiece;
@@ -115,6 +132,21 @@ public class PartidaXadrez {
 			rook.increaseMoveCount();
 		}
 
+		// Movimento especial en passant
+		if (p instanceof Pawn) {
+			if (source.getColuna() != target.getColuna() && capturedPiece == null) {
+				Posicao pawnPosition;
+				if (p.getCor() == Cor.BRANCO) {
+					pawnPosition = new Posicao(target.getLinha() + 1, target.getColuna());
+				} else {
+					pawnPosition = new Posicao(target.getLinha() - 1, target.getColuna());
+				}
+				capturedPiece = board.removePiece(pawnPosition);
+				capturedPieces.add(capturedPiece);
+				piecesOnTheBoard.remove(capturedPiece);
+			}
+		}
+
 		return capturedPiece;
 	}
 
@@ -145,6 +177,20 @@ public class PartidaXadrez {
 			PecaXadrez rook = (PecaXadrez) board.removePiece(targetT);
 			board.placePiece(rook, sourceT);
 			rook.decreaseMoveCount();
+		}
+
+		// Movimento especial en passant Undo
+		if (p instanceof Pawn) {
+			if (source.getColuna() != target.getColuna() && capturedPiece == enPassantVulnerable) {
+				PecaXadrez pawn = (PecaXadrez)board.removePiece(target);
+				Posicao pawnPosition;
+				if (p.getCor() == Cor.BRANCO) {
+					pawnPosition = new Posicao(3, target.getColuna());
+				} else {
+					pawnPosition = new Posicao(4, target.getColuna());
+				}
+				board.placePiece(pawn, pawnPosition);
+			}
 		}
 	}
 
@@ -232,15 +278,38 @@ public class PartidaXadrez {
 	}
 
 	private void initialSetup() {
-		placeNewPiece('h', 7, new Rook(board, Cor.BRANCO));
+		placeNewPiece('a', 1, new Rook(board, Cor.BRANCO));
+		placeNewPiece('b', 1, new Knight(board, Cor.BRANCO));
 		placeNewPiece('c', 1, new Bishop(board, Cor.BRANCO));
-		placeNewPiece('d', 1, new Rook(board, Cor.BRANCO));
+		placeNewPiece('d', 1, new Queen(board, Cor.BRANCO));
 		placeNewPiece('e', 1, new King(board, Cor.BRANCO, this));
-		placeNewPiece('e', 1, new Queen(board, Cor.BRANCO));
+		placeNewPiece('f', 1, new Bishop(board, Cor.BRANCO));
+		placeNewPiece('g', 1, new Knight(board, Cor.BRANCO));
+		placeNewPiece('h', 1, new Rook(board, Cor.BRANCO));
+		placeNewPiece('a', 2, new Pawn(board, Cor.BRANCO, this));
+		placeNewPiece('b', 2, new Pawn(board, Cor.BRANCO, this));
+		placeNewPiece('c', 2, new Pawn(board, Cor.BRANCO, this));
+		placeNewPiece('d', 2, new Pawn(board, Cor.BRANCO, this));
+		placeNewPiece('e', 2, new Pawn(board, Cor.BRANCO, this));
+		placeNewPiece('f', 2, new Pawn(board, Cor.BRANCO, this));
+		placeNewPiece('g', 2, new Pawn(board, Cor.BRANCO, this));
+		placeNewPiece('h', 2, new Pawn(board, Cor.BRANCO, this));
 
-		placeNewPiece('b', 8, new Rook(board, Cor.PRETO));
-		placeNewPiece('e', 1, new Queen(board, Cor.PRETO));
+		placeNewPiece('a', 8, new Rook(board, Cor.PRETO));
+		placeNewPiece('b', 8, new Knight(board, Cor.PRETO));
 		placeNewPiece('c', 8, new Bishop(board, Cor.PRETO));
-		placeNewPiece('a', 8, new King(board, Cor.PRETO, this));
+		placeNewPiece('d', 8, new Queen(board, Cor.PRETO));
+		placeNewPiece('e', 8, new King(board, Cor.PRETO, this));
+		placeNewPiece('f', 8, new Bishop(board, Cor.PRETO));
+		placeNewPiece('g', 8, new Knight(board, Cor.PRETO));
+		placeNewPiece('h', 8, new Rook(board, Cor.PRETO));
+		placeNewPiece('a', 7, new Pawn(board, Cor.PRETO, this));
+		placeNewPiece('b', 7, new Pawn(board, Cor.PRETO, this));
+		placeNewPiece('c', 7, new Pawn(board, Cor.PRETO, this));
+		placeNewPiece('d', 7, new Pawn(board, Cor.PRETO, this));
+		placeNewPiece('e', 7, new Pawn(board, Cor.PRETO, this));
+		placeNewPiece('f', 7, new Pawn(board, Cor.PRETO, this));
+		placeNewPiece('g', 7, new Pawn(board, Cor.PRETO, this));
+		placeNewPiece('h', 7, new Pawn(board, Cor.PRETO, this));
 	}
 }
